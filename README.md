@@ -22,7 +22,7 @@ VouchGrid is a GitHub-native platform that helps developers showcase verified co
 
 | Identity \& Authentication | ✅ Not Started |
 
-| Projects \& Membership | ⏳ Not Started |
+| Projects \& Membership | ✅ Not Started |
 
 | Repositories \& Modules | ⏳ Not Started |
 
