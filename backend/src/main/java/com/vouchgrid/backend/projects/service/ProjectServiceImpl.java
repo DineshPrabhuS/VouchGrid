@@ -3,6 +3,8 @@ package com.vouchgrid.backend.projects.service;
 import java.time.Instant;
 import java.util.UUID;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,5 +76,31 @@ public class ProjectServiceImpl implements ProjectService {
                 .createdBy(creator.getUserId())
                 .createdAt(savedProject.getCreatedAt())
                 .build();
+        }
+
+        @Override
+        public List<ProjectResponse> getMyProjects(
+                UUID userId
+        ) {
+
+        List<ProjectMember> memberships =
+                projectMemberRepository
+                        .findByUser_UserId(userId);
+
+        return memberships.stream()
+                .map(ProjectMember::getProject)
+                .map(project ->
+                        ProjectResponse.builder()
+                                .projectId(project.getProjectId())
+                                .name(project.getName())
+                                .description(project.getDescription())
+                                .createdBy(
+                                        project.getCreatedBy()
+                                                .getUserId()
+                                )
+                                .createdAt(project.getCreatedAt())
+                                .build()
+                )
+                .toList();
         }
 }
