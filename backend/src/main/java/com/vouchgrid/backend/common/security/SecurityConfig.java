@@ -30,14 +30,12 @@ public class SecurityConfig {
                         )
                 )
 
-                .authorizeHttpRequests(auth ->
-                        auth
-                                .requestMatchers(
-                                        "/api/auth/**"
-                                ).permitAll()
-
-                                .anyRequest()
-                                .authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                "/api/github/connect",
+                "/api/github/callback"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
