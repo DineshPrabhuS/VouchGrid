@@ -32,20 +32,33 @@ public class ProjectMember {
     @EmbeddedId
     private ProjectMemberId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("projectId")
-    @JoinColumn(name = "project_id")
+    @JoinColumn(
+            name = "project_id",
+            nullable = false
+    )
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("userId")
-    @JoinColumn(name = "user_id")
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
+    )
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(
+            name = "role",
+            nullable = false,
+            length = 20
+    )
     private ProjectRole role;
 
-    @Column(name = "joined_at")
+    @Column(
+            name = "joined_at",
+            nullable = false
+    )
     private Instant joinedAt;
 }
