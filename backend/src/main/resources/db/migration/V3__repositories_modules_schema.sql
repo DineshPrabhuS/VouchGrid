@@ -1,9 +1,10 @@
 CREATE TABLE repositories (
     project_id BINARY(16) NOT NULL,
-    provider VARCHAR(30) NOT NULL,
-    owner_name VARCHAR(100) NOT NULL,
-    repository_name VARCHAR(150) NOT NULL,
-    repository_url VARCHAR(500) NOT NULL,
+    provider VARCHAR(50) NOT NULL,
+    owner_name VARCHAR(255) NOT NULL,
+    repository_name VARCHAR(255) NOT NULL,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (
         project_id,
@@ -12,43 +13,47 @@ CREATE TABLE repositories (
         repository_name
     ),
 
-    CONSTRAINT fk_repositories_project
+    CONSTRAINT fk_repository_project
         FOREIGN KEY (project_id)
         REFERENCES projects(project_id)
         ON DELETE CASCADE
 );
-
 
 CREATE TABLE modules (
-    module_id BINARY(16) NOT NULL,
+    module_id BINARY(16) PRIMARY KEY,
+
     project_id BINARY(16) NOT NULL,
-    name VARCHAR(150) NOT NULL,
+
+    title VARCHAR(255) NOT NULL,
     description TEXT,
-    status VARCHAR(40) NOT NULL,
-    created_at TIMESTAMP NOT NULL,
 
-    PRIMARY KEY (module_id),
+    status VARCHAR(50) NOT NULL,
 
-    CONSTRAINT fk_modules_project
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_module_project
         FOREIGN KEY (project_id)
         REFERENCES projects(project_id)
         ON DELETE CASCADE
 );
-
 
 CREATE TABLE module_assignments (
     module_id BINARY(16) NOT NULL,
     user_id BINARY(16) NOT NULL,
-    assigned_at TIMESTAMP NOT NULL,
 
-    PRIMARY KEY (module_id, user_id),
+    assigned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_module_assignments_module
+    PRIMARY KEY (
+        module_id,
+        user_id
+    ),
+
+    CONSTRAINT fk_assignment_module
         FOREIGN KEY (module_id)
         REFERENCES modules(module_id)
         ON DELETE CASCADE,
 
-    CONSTRAINT fk_module_assignments_user
+    CONSTRAINT fk_assignment_user
         FOREIGN KEY (user_id)
         REFERENCES users(user_id)
         ON DELETE CASCADE
