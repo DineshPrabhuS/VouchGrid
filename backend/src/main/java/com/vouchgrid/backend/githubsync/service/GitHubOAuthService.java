@@ -1,15 +1,15 @@
 package com.vouchgrid.backend.githubsync.service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.vouchgrid.backend.githubsync.config.GitHubOAuthProperties;
-import com.vouchgrid.backend.githubsync.dto.GitHubRepoResponse;
 import com.vouchgrid.backend.githubsync.dto.GitHubTokenResponse;
+import com.vouchgrid.backend.githubsync.dto.GitHubUserProfile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,19 +19,29 @@ public class GitHubOAuthService {
 
     private final GitHubOAuthProperties properties;
 
-    private final RestClient restClient;
+        private final RestClient restClient;
+        private final com.vouchgrid.backend.common.security.JwtService jwtService;
 
-    public String buildAuthorizationUrl() {
+        public String createAuthorizationUrl() {
+                String state = jwtService.generateOAuthState();
 
-        return String.format(
+                return String.format(
                 "https://github.com/login/oauth/authorize" +
                 "?client_id=%s" +
                 "&redirect_uri=%s" +
-                "&scope=repo",
-                properties.clientId(),
-                properties.redirectUri()
+                                "&scope=repo" +
+                                "&state=%s",
+                                encode(properties.clientId()),
+                                encode(properties.redirectUri()),
+                                encode(state)
         );
     }
+
+        public void validateState(String state) {
+                if (!jwtService.isOAuthStateValid(state)) {
+                    throw new IllegalArgumentException("Invalid or expired GitHub OAuth state");
+        }
+            }
 
     public String exchangeCodeForToken(String code) {
 
@@ -53,30 +63,24 @@ public class GitHubOAuthService {
         }
 
         return response.accessToken();
-}
+        }
 
-        public List<GitHubRepoResponse> fetchRepositories(String accessToken) {
-
-                System.out.println("TOKEN = " + accessToken);
-
-                GitHubRepoResponse[] repos =
-                        restClient.get()
-                                .uri("https://api.github.com/user/repos")
+        public GitHubUserProfile fetchUserProfile(String accessToken) {
+                GitHubUserProfile profile = restClient.get()
+                                .uri("https://api.github.com/user")
                                 .header("Authorization", "Bearer " + accessToken)
                                 .header("Accept", "application/vnd.github+json")
                                 .retrieve()
-                                .body(GitHubRepoResponse[].class);
+                                .body(GitHubUserProfile.class);
 
-                return Arrays.asList(repos);
+                if (profile == null || profile.id() == null || profile.login() == null) {
+                        throw new IllegalStateException("GitHub returned an incomplete user profile");
+                }
+                return profile;
         }
 
-        public String fetchRepositoriesRaw(String accessToken) {
-
-        return restClient.get()
-                .uri("https://api.github.com/user/repos")
-                .header("Authorization", "Bearer " + accessToken)
-                .header("Accept", "application/vnd.github+json")
-                .retrieve()
-                .body(String.class);
+        private String encode(String value) {
+                return URLEncoder.encode(value, StandardCharsets.UTF_8);
         }
+
 }

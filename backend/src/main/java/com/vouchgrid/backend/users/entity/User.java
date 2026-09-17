@@ -43,6 +43,9 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "bio", length = 1000)
+    private String bio;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 

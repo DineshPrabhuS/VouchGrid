@@ -6,8 +6,6 @@ CREATE TABLE repository_commits (
     author VARCHAR(255),
 
     message TEXT,
-
     commit_date TIMESTAMP NULL,
-
     repository_name VARCHAR(255)
 );

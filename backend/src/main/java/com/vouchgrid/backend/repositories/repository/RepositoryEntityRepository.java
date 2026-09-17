@@ -11,4 +11,5 @@ public interface RepositoryEntityRepository
         extends JpaRepository<RepositoryEntity, RepositoryId> {
 
     List<RepositoryEntity> findByProject_ProjectId(UUID projectId);
+
 }

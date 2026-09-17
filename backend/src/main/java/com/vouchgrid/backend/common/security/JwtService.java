@@ -34,6 +34,28 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateOAuthState() {
+        return Jwts.builder()
+                .claim("oauth", true)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 600_000))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public boolean isOAuthStateValid(String state) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(state)
+                    .getPayload();
+            return Boolean.TRUE.equals(claims.get("oauth", Boolean.class));
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
     public String extractUsername(String token) {
 
         Claims claims = Jwts.parser()

@@ -43,21 +43,21 @@ public class RepositoryServiceImpl
                         .orElseThrow(() ->
                                 new RuntimeException("Project not found"));
 
-        RepositoryEntity repository =
-                RepositoryEntity.builder()
-                        .id(
-                                new RepositoryId(
-                                        projectId,
-                                        request.getProvider(),
-                                        request.getOwnerName(),
-                                        request.getRepositoryName()
-                                )
-                        )
+        RepositoryId repositoryId = new RepositoryId(
+                projectId,
+                request.getProvider(),
+                request.getOwnerName(),
+                request.getRepositoryName()
+        );
+
+        RepositoryEntity repository = repositoryRepository.findById(repositoryId)
+                .orElseGet(() -> RepositoryEntity.builder()
+                        .id(repositoryId)
                         .project(project)
                         .createdAt(Instant.now())
-                        .build();
+                        .build());
 
-        repositoryRepository.save(repository);
+        repository = repositoryRepository.save(repository);
 
         return map(repository);
     }

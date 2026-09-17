@@ -25,4 +25,7 @@ public class RepositoryEntity {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @Column(name = "sync_fingerprint")
+    private String syncFingerprint;
 }

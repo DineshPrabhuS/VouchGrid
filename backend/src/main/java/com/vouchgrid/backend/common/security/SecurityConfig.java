@@ -32,8 +32,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                "/api/github/connect",
-                "/api/github/callback"
+                "/api/auth/github",
+                "/api/auth/github/callback",
+                "/api/public/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

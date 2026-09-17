@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/projects/{projectId}/repositories")
+@RequestMapping("/api/projects/{projectId}")
 @RequiredArgsConstructor
 public class RepositoryController {
 
     private final RepositoryService repositoryService;
 
-    @PostMapping
+    @PostMapping({"/repositories", "/link-repository"})
     public RepositoryResponse linkRepository(
             @PathVariable UUID projectId,
             @Valid @RequestBody CreateRepositoryRequest request
@@ -31,7 +31,7 @@ public class RepositoryController {
         );
     }
 
-    @GetMapping
+    @GetMapping("/repositories")
     public List<RepositoryResponse> getRepositories(
             @PathVariable UUID projectId
     ) {
